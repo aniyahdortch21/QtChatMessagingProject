@@ -1,0 +1,75 @@
+{
+    "CHRIS": [
+        {
+            "SENT": {
+                "TimeStamp": "10:14:45 Sun Apr 23 2023",
+                "destination": "CHRIS",
+                "source": "NIYAH",
+                "text": "hello"
+            }
+        },
+        {
+            "RECV": {
+                "destination": "NIYAH",
+                "sender": "CHRIS",
+                "source": "CHRIS",
+                "text": "hello",
+                "type": "message"
+            }
+        },
+        {
+            "SENT": {
+                "TimeStamp": "10:21:35 Sun Apr 23 2023",
+                "destination": "CHRIS",
+                "source": "NIYAH",
+                "text": "hello"
+            }
+        },
+        {
+            "RECV": {
+                "destination": "NIYAH",
+                "sender": "CHRIS",
+                "source": "CHRIS",
+                "text": "hi",
+                "type": "message"
+            }
+        },
+        {
+            "RECV": {
+                "destination": "NIYAH",
+                "sender": "CHRIS",
+                "source": "CHRIS",
+                "text": "I want to go to the park",
+                "type": "message"
+            }
+        },
+        {
+            "RECV": {
+                "destination": "NIYAH",
+                "sender": "CHRIS",
+                "source": "CHRIS",
+                "text": "I was thinking 5am",
+                "type": "message"
+            }
+        },
+        {
+            "RECV": {
+                "destination": "NIYAH",
+                "sender": "CHRIS",
+                "source": "CHRIS",
+                "text": "Is that okay",
+                "type": "message"
+            }
+        }
+    ],
+    "MATT": [
+        {
+            "SENT": {
+                "TimeStamp": "10:23:29 Sun Apr 23 2023",
+                "destination": "MATT",
+                "source": "NIYAH",
+                "text": "Hi Matt"
+            }
+        }
+    ]
+}
