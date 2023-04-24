@@ -26,6 +26,9 @@ MainWindow::MainWindow(QWidget *parent)
     QString messageDestination = "";
     //int messageDestinationRow = 0;//Deafult row
     //int usersSigndeUp = 0;
+    
+    //Update your path to this project here
+    filePath = "C:/Users/aniya/Desktop/Spring 2023/DestinationTesting/QtChatMessagingProject-main/";
 }
 
 MainWindow::~MainWindow()
