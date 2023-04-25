@@ -1,9 +1,66 @@
 {
+    "": [
+        {
+            "SENT": {
+                "TimeStamp": "08:54:46 Tue Apr 25 2023",
+                "destination": "",
+                "key": "",
+                "source": "NIYAH",
+                "text": "hello"
+            }
+        }
+    ],
     "CHRIS": [
         {
             "SENT": {
-                "TimeStamp": "10:14:45 Sun Apr 23 2023",
+                "TimeStamp": "08:42:51 Tue Apr 25 2023",
                 "destination": "CHRIS",
+                "key": "",
+                "source": "NIYAH",
+                "text": "hello"
+            }
+        },
+        {
+            "SENT": {
+                "TimeStamp": "08:43:13 Tue Apr 25 2023",
+                "destination": "CHRIS",
+                "key": "",
+                "source": "NIYAH",
+                "text": "I want to leave at 6pm"
+            }
+        },
+        {
+            "RECV": {
+                "destination": "NIYAH",
+                "sender": "CHRIS",
+                "source": "CHRIS",
+                "text": "That sounds good!",
+                "type": "message"
+            }
+        },
+        {
+            "SENT": {
+                "TimeStamp": "08:46:24 Tue Apr 25 2023",
+                "destination": "CHRIS",
+                "key": "",
+                "source": "NIYAH",
+                "text": "hello"
+            }
+        },
+        {
+            "SENT": {
+                "TimeStamp": "08:54:25 Tue Apr 25 2023",
+                "destination": "CHRIS",
+                "key": "",
+                "source": "NIYAH",
+                "text": "hello"
+            }
+        },
+        {
+            "SENT": {
+                "TimeStamp": "08:58:05 Tue Apr 25 2023",
+                "destination": "CHRIS",
+                "key": "",
                 "source": "NIYAH",
                 "text": "hello"
             }
@@ -13,14 +70,33 @@
                 "destination": "NIYAH",
                 "sender": "CHRIS",
                 "source": "CHRIS",
-                "text": "hello",
+                "text": "HI!!!",
                 "type": "message"
             }
         },
         {
             "SENT": {
-                "TimeStamp": "10:21:35 Sun Apr 23 2023",
+                "TimeStamp": "08:58:29 Tue Apr 25 2023",
                 "destination": "CHRIS",
+                "key": "",
+                "source": "NIYAH",
+                "text": "Where are you?"
+            }
+        },
+        {
+            "RECV": {
+                "destination": "NIYAH",
+                "sender": "CHRIS",
+                "source": "CHRIS",
+                "text": "Texas",
+                "type": "message"
+            }
+        },
+        {
+            "SENT": {
+                "TimeStamp": "09:04:57 Tue Apr 25 2023",
+                "destination": "CHRIS",
+                "key": "",
                 "source": "NIYAH",
                 "text": "hello"
             }
@@ -32,43 +108,6 @@
                 "source": "CHRIS",
                 "text": "hi",
                 "type": "message"
-            }
-        },
-        {
-            "RECV": {
-                "destination": "NIYAH",
-                "sender": "CHRIS",
-                "source": "CHRIS",
-                "text": "I want to go to the park",
-                "type": "message"
-            }
-        },
-        {
-            "RECV": {
-                "destination": "NIYAH",
-                "sender": "CHRIS",
-                "source": "CHRIS",
-                "text": "I was thinking 5am",
-                "type": "message"
-            }
-        },
-        {
-            "RECV": {
-                "destination": "NIYAH",
-                "sender": "CHRIS",
-                "source": "CHRIS",
-                "text": "Is that okay",
-                "type": "message"
-            }
-        }
-    ],
-    "MATT": [
-        {
-            "SENT": {
-                "TimeStamp": "10:23:29 Sun Apr 23 2023",
-                "destination": "MATT",
-                "source": "NIYAH",
-                "text": "Hi Matt"
             }
         }
     ]

@@ -45,6 +45,7 @@ private:
     int messageDestinationRow;
     int usersSignedUp   = 0;
     int firstMessage = 1;
+    bool userConnectedToServer = false;
 
 private slots:
     void attemptConnection();

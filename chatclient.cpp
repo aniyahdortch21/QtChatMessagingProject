@@ -59,8 +59,11 @@ void ChatClient::sendMessage(const QString &text, const QString &destination, co
     message[QStringLiteral("text")] = text;
     message[QStringLiteral("destination")] = destination;
     message[QStringLiteral("source")] = source;
-    // send the JSON using QDataStream
-    clientStream << QJsonDocument(message).toJson();
+    // send the JSON using QDataStream as long as a destination was chosen
+    if(!destination.isNull()){
+        clientStream << QJsonDocument(message).toJson();
+    }
+
 }
 
 void ChatClient::disconnectFromHost()
@@ -101,6 +104,7 @@ void ChatClient::jsonReceived(const QJsonObject &docObj)
         if (senderVal.isNull() || !senderVal.isString())
             return; // the sender field was invalid so we ignore
 
+        //Below we are added the received message to the clientJSON so when we need to update the chat view we will read them
         qDebug() << QDir::currentPath();
         //New path to the file since it isn't in the build I will redirect it
         QRegularExpression rx("[/ ]");// match a comma or a space
@@ -151,7 +155,10 @@ void ChatClient::jsonReceived(const QJsonObject &docObj)
             return; // the username was invalid so we ignore
 
         // we notify of the new user via the userJoined signal
-        emit userJoined(usernameVal.toString());
+
+
+
+        //emit userJoined(usernameVal.toString());
     } else if (typeVal.toString().compare(QLatin1String("userdisconnected"), Qt::CaseInsensitive) == 0) { // A user left the chat
         // we extract the username of the new user
         const QJsonValue usernameVal = docObj.value(QLatin1String("username"));

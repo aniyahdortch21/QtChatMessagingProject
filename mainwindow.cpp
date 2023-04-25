@@ -20,15 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
     , m_chatModel(new QStandardItemModel(this)) // create the model to hold the messages
     , m_contactModel(new QStandardItemModel(this)) // create the model to hold the contacts
 {
+
     ui->setupUi(this);
-    QString user = "";
-    QString password = "";
-    QString messageDestination = "";
-    //int messageDestinationRow = 0;//Deafult row
-    //int usersSigndeUp = 0;
-    
-    //Update your path to this project here
-    filePath = "C:/Users/aniya/Desktop/Spring 2023/DestinationTesting/QtChatMessagingProject-main/";
+    //UNCOMMENT below and change to your .pro path
+    //filePath = "C:/Users/aniya/Desktop/Spring 2023/DestinationTesting/QtChatMessagingProject-main/";
 }
 
 MainWindow::~MainWindow()
@@ -37,25 +32,27 @@ MainWindow::~MainWindow()
     delete chat;
 }
 
-
-
 void MainWindow::on_signinButton_clicked()
 {
+    //Gets the username and password from the form
     QTextEdit *userEntered = ui->userName;
     QTextEdit *passwordEntered = ui->password;
 
     qDebug() << userEntered->toPlainText();
     qDebug() << passwordEntered->toPlainText();
 
+    //Set the global user to the information entered
     user = userEntered->toPlainText();
     password = passwordEntered->toPlainText();
 
+    //Will try and find the path for the .pro file but not needed if you add the hardcoded path aboe
     if(filePath.isNull()){
         qDebug() << QDir::currentPath();
         //New path to the file since it isn't in the build I will redirect it
         QRegularExpression rx("[/ ]");// match a comma or a space
         QStringList list = QDir::currentPath().split(rx, Qt::SkipEmptyParts);
 
+        //Will read and go back one directory to find my xmlLogin file
         for(int i(0); i < list.size()-1; i++){
             if(i == 0){
                 filePath = list[i] + "/";
@@ -79,15 +76,14 @@ void MainWindow::on_signinButton_clicked()
     usersXML.setContent(&xmlFile);
     xmlFile.close();
 
-    QDomElement root = usersXML.documentElement();
-    QDomElement node = root.firstChild().toElement();
+    QDomElement root = usersXML.documentElement(); //The main tag name in file
+    QDomElement node = root.firstChild().toElement(); //The seperate users inside of the root
 
-    QString datas = "";
-    QString contactInit = "";
-    bool sucessful = false;
+    QString datas = ""; //Used to read what's currently in the file
+    QString contactInit = ""; //Keep track of the current contacts and add to it later
+    bool sucessful = false; //True if it was able to find the user
     while(node.isNull() == false)
     {
-        //qDebug() << node.tagName();
         if(node.tagName() == "userInfo"){
             while(!node.isNull()){
                 QString userNameXML = node.attribute("userName","userName");
@@ -111,35 +107,26 @@ void MainWindow::on_signinButton_clicked()
 
 
     }else{
-        qDebug() << datas;
-
-        /*
-        This isn't needed anymore
-        Dialog d;
-        d.setModal(true);
-        d.exec();
-        hide();
-        chatDialog = new Dialog(this);
-        chatDialog -> show();*/
+        qDebug() << "Inside xml:" + datas;
 
         chat =new Ui::ChatMainWindow;
         chat->setupUi(this); //Switch the view from login to chat view
 
-        // the model for the messages will have 1 column
+        // Inits that chat model and the contacts model so we can add to it in the future
         m_chatModel->insertColumn(0);
         m_contactModel->insertColumn(0);
 
+        //Will read through the contacts list so we can add them to the chat view... means the user has loggin
         if(!contactInit.isNull()){
             //Parse to add all contacts to the list that were selected previously
             QRegularExpression rx("[, ]");// match a comma or a space
             QStringList list = contactInit.split(rx, Qt::SkipEmptyParts);
 
+            qDebug() << "Current contact list: ";
             qDebug() << list;
             for(int i(0); i < list.size(); i++){
                 m_contactModel->insertRow(i);
-
                 m_contactModel->setData(m_contactModel->index(i, 0), list.at(i));
-
                 m_contactModel->setData(m_contactModel->index(i, 0), int(Qt::AlignRight | Qt::AlignVCenter), Qt::TextAlignmentRole);
 
             }
@@ -169,8 +156,6 @@ void MainWindow::on_signinButton_clicked()
 
 
 }
-
-
 
 
 void MainWindow::attemptConnection()
@@ -206,6 +191,7 @@ void MainWindow::attemptLogin(const QString &userName)
 void MainWindow::loggedIn()
 {
     // once we successully log in we enable the ui to display and send messages
+    userConnectedToServer = true;
     chat->sendButton->setEnabled(true);
     chat->messageEdit->setEnabled(true);
     chat->chatView->setEnabled(true);
@@ -234,14 +220,17 @@ void MainWindow::messageReceived(const QString &sender, const QString &text)
         QFont boldFont;
         boldFont.setBold(true);
         // insert 2 row, one for the message and one for the username
-        m_chatModel->insertRows(newRow, 2);
-        // store the username in the model
-        m_chatModel->setData(m_chatModel->index(newRow, 0), sender + QLatin1Char(':'));
-        // set the alignment for the username
-        m_chatModel->setData(m_chatModel->index(newRow, 0), int(Qt::AlignLeft | Qt::AlignVCenter), Qt::TextAlignmentRole);
-        // set the for the username
-        m_chatModel->setData(m_chatModel->index(newRow, 0), boldFont, Qt::FontRole);
-        ++newRow;
+        if(messageDestination == sender){
+            m_chatModel->insertRows(newRow, 2);
+            // store the username in the model
+            m_chatModel->setData(m_chatModel->index(newRow, 0), sender + QLatin1Char(':'));
+            // set the alignment for the username
+            m_chatModel->setData(m_chatModel->index(newRow, 0), int(Qt::AlignLeft | Qt::AlignVCenter), Qt::TextAlignmentRole);
+            // set the for the username
+            m_chatModel->setData(m_chatModel->index(newRow, 0), boldFont, Qt::FontRole);
+            ++newRow;
+        }
+
     } else {
         // insert a row for the message
         m_chatModel->insertRow(newRow);
@@ -265,23 +254,20 @@ void MainWindow::sendMessage()
 {
     // we use the client to send the message that the user typed
 
-    m_chatClient->sendMessage(chat->messageEdit->text(), messageDestination, user);
-    //Add message to users col
-    /*const int row = m_messagesSave->rowCount();
-    m_messagesSave->insertRow(row);
-    m_messagesSave->setData(m_messagesSave->index(row, messageDestinationRow*2), chat->messageEdit->text());
-    m_messagesSave->setData(m_messagesSave->index(row, 0), int(Qt::AlignRight | Qt::AlignVCenter), Qt::TextAlignmentRole);
-*/
-
-
     const int newRow = m_chatModel->rowCount();
-    m_chatModel->insertRow(newRow);
-    m_chatModel->setData(m_chatModel->index(newRow, 0), chat->messageEdit->text());
-    m_chatModel->setData(m_chatModel->index(newRow, 0), int(Qt::AlignRight | Qt::AlignVCenter), Qt::TextAlignmentRole);
 
     if(messageDestination.isNull()){
         QMessageBox::information(this, "ERROR", "Select a contact before you send the message!!");
+    }else if(!userConnectedToServer){
+        QMessageBox::information(this, "ERROR", "You are not connected to the server in order to send this message!!");
     }else{
+
+        m_chatClient->sendMessage(chat->messageEdit->text(), messageDestination, user);
+        //Only add to chatview if contact selected and connected to the server
+        m_chatModel->insertRow(newRow);
+        m_chatModel->setData(m_chatModel->index(newRow, 0), chat->messageEdit->text());
+        m_chatModel->setData(m_chatModel->index(newRow, 0), int(Qt::AlignRight | Qt::AlignVCenter), Qt::TextAlignmentRole);
+
         QJsonDocument doc;
         QJsonObject saveMsg;
         saveMsg.insert("text", chat->messageEdit->text());
@@ -291,6 +277,7 @@ void MainWindow::sendMessage()
         QDate date = QDate::currentDate();
         QString dateTime = time.toString() + " " + date.toString();
         saveMsg.insert("TimeStamp", dateTime);
+        saveMsg.insert("key", ""); //This is where the key to use in the server to get the original message
         QJsonObject content;
         content.insert("SENT", saveMsg);
         QJsonObject overall;
@@ -460,7 +447,7 @@ void MainWindow::on_signupButton_clicked()
 
 
     if(filePath.isNull()){
-        qDebug() << QDir::currentPath();
+        qDebug() << "QDirectory path: " + QDir::currentPath();
         //New path to the file since it isn't in the build I will redirect it
         QRegularExpression rx("[/ ]");// match a comma or a space
         QStringList list = QDir::currentPath().split(rx, Qt::SkipEmptyParts);
@@ -490,7 +477,7 @@ void MainWindow::on_signupButton_clicked()
     QDomElement root = usersXML.documentElement();
     xmlFile.close();
 
-
+    QDomElement node = root.firstChild().toElement();//Is the list of users inside the root
     if(root.isNull()){
         qDebug() << "Empty file";
         usersXML.setContent("<UserList>");
@@ -507,43 +494,71 @@ void MainWindow::on_signupButton_clicked()
         QTextStream xmlContent(&xmlFile);
         xmlContent << usersXML.toString();
         xmlFile.close();
-        qDebug()<<"finished.";
+        qDebug()<<"Finished trying to read the file";
+    } else{
+        qDebug() << "Make sure userName isn't taken";
+        bool userNameTaken = false;
+        while(node.isNull() == false)
+        {
+            //qDebug() << node.tagName();
+            if(node.tagName() == "userInfo"){
+                while(!node.isNull()){
+                    QString userNameXML = node.attribute("userName","userName");
+
+                    if(userNameXML == userEntered->toPlainText()){
+                        userNameTaken = true;
+                    }
+                    node = node.nextSibling().toElement();
+                }
+            }
+            node = node.nextSibling().toElement();
+        }
+        if(userNameTaken){
+            QMessageBox::critical(this, tr("Error"), "User name taken. Try again");
+
+        }else{
+            //have to reopen file incase it was empty
+            if (!xmlFile.open(QFile::ReadWrite | QFile::Text ))
+            {
+                qDebug() << "Already opened or there is another issue";
+                xmlFile.close();
+            }
+
+            usersXML.setContent(&xmlFile); //Keeps the original file the same
+            root = usersXML.documentElement();
+            xmlFile.close();
+            QDomElement newuser = usersXML.createElement("userInfo");
+            newuser.setAttribute("userName", userEntered->toPlainText());
+            newuser.setAttribute("password", passwordEntered->toPlainText());
+            newuser.setAttribute("contacts", "");
+
+            root.appendChild(newuser);
+
+            if (!xmlFile.open(QFile::ReadWrite | QFile::Text ))
+            {
+                qDebug() << "Already opened or there is another issue";
+                xmlFile.close();
+            }
+            QTextStream xmlContent(&xmlFile);
+            xmlContent << usersXML.toString();
+            xmlFile.close();
+            QMessageBox::information(this, tr("Sucessful"), "You are signed up for ChatMessaging");
+
+        }
     }
-
-    //have to reopen file incase it was empty
-    if (!xmlFile.open(QFile::ReadWrite | QFile::Text ))
-    {
-        qDebug() << "Already opened or there is another issue";
-        xmlFile.close();
-    }
-
-    usersXML.setContent(&xmlFile); //Keeps the original file the same
-    root = usersXML.documentElement();
-    xmlFile.close();
-    QDomElement student = usersXML.createElement("userInfo");
-    student.setAttribute("userName", userEntered->toPlainText());
-    student.setAttribute("password", passwordEntered->toPlainText());
-    student.setAttribute("contacts", "");
-
-    root.appendChild(student);
-
-    if (!xmlFile.open(QFile::ReadWrite | QFile::Text ))
-    {
-        qDebug() << "Already opened or there is another issue";
-        xmlFile.close();
-    }
-    QTextStream xmlContent(&xmlFile);
-    xmlContent << usersXML.toString();
-    xmlFile.close();
-    qDebug()<<"finished.";
-    usersSignedUp++;
-
 }
 
 void MainWindow::on_logOutButton_clicked()
 {
     m_contactModel->clear();
     m_chatModel->clear();
+    m_chatClient->disconnectFromHost();
+    messageDestination = "";
+    messageDestinationRow = 0;
+    usersSignedUp   = 0;
+    firstMessage = 1;
+    userConnectedToServer = false;
+
     ui->setupUi(this);
 }
 
@@ -554,12 +569,7 @@ void MainWindow::on_addContactButton_clicked()
     qDebug() << "New contact: " + newContact;
 
     const int newRow = m_contactModel->rowCount();
-    qDebug() << newRow;
-    m_contactModel->insertRow(newRow);
-
-    m_contactModel->setData(m_contactModel->index(newRow, 0), newContact);
-
-    m_contactModel->setData(m_contactModel->index(newRow, 0), int(Qt::AlignRight | Qt::AlignVCenter), Qt::TextAlignmentRole);
+    //qDebug() << "Row Count: " + newRow;
 
     QDomDocument usersXML;
     //have to reopen file incase it was empty
@@ -575,6 +585,7 @@ void MainWindow::on_addContactButton_clicked()
 
     QDomElement root = usersXML.documentElement();
     QDomElement node = root.firstChild().toElement();
+    bool contactExists = false;
     while(node.isNull() == false)
     {
         //qDebug() << node.tagName();
@@ -584,11 +595,32 @@ void MainWindow::on_addContactButton_clicked()
                 QString userNameXML = node.attribute("userName","userName");
                 QString contactsXML = node.attribute("contacts","contacts");
                 QString newContactString = "";
+
                 if(userNameXML == user){
+                    //This is our object in the xml
                     if(contactsXML.isNull()){
                         newContactString = newContact;
                     }else{
-                        newContactString = contactsXML + "," + newContact;
+                        QRegularExpression rx("[, ]");// match a comma or a space
+                        QStringList list = contactsXML.split(rx, Qt::SkipEmptyParts);
+
+                        for(int i(0); i < list.size(); i++){
+                            if(list[i].toUpper() == newContact.toUpper()){
+                                qDebug() << "Not equal: " + list[i];
+                                contactExists = true;
+                            }
+                            else{
+                                qDebug() << list[i];
+                            }
+
+                        }
+                        if(!contactExists){
+                            //If contact not in the list we can send
+                            newContactString = contactsXML + "," + newContact;
+                        }else{
+                            newContactString = contactsXML;
+                        }
+
                     }
 
                     node.setAttribute("contacts", newContactString);
@@ -599,6 +631,16 @@ void MainWindow::on_addContactButton_clicked()
         node = node.nextSibling().toElement();
     }
 
+    if(!contactExists){
+        m_contactModel->insertRow(newRow);
+
+        m_contactModel->setData(m_contactModel->index(newRow, 0), newContact);
+
+        m_contactModel->setData(m_contactModel->index(newRow, 0), int(Qt::AlignRight | Qt::AlignVCenter), Qt::TextAlignmentRole);
+
+    }else{
+        QMessageBox::critical(this, tr("ALREADY EXISTS"), "Already listed");
+    }
     usersXML.appendChild(node);
 
     if (!xmlFile.open(QFile::ReadWrite | QFile::Text ))

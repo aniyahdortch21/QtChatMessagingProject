@@ -1,7 +1,6 @@
 <UserList>
- <userInfo contacts=",CHRIS,ALIYAH,MATT,MOM" password="1221" userName="NIYAH"/>
- <userInfo contacts=",ALIYAH,MATT,NIYAH" password="0216" userName="CHRIS"/>
- <userInfo contacts="" password="Caden" userName="Caden"/>
- <userInfo contacts="" password="CAT" userName="CAT"/>
- <userInfo contacts="" password="12" userName="NANA"/>
+ <userInfo contacts=",CHRIS,ALIYAH,MATT,MOM,NANANANA" password="1221" userName="NIYAH"/>
+ <userInfo contacts="" password="1213" userName="NIYAH21"/>
+ <userInfo contacts="" password="1221" userName="NIYAH1221"/>
+ <userInfo contacts=",CHRIS" password="0321" userName="ALIYAH"/>
 </UserList>
