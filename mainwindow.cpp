@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
     //UNCOMMENT below and change to your .pro path
-    //filePath = "C:/Users/aniya/Desktop/Spring 2023/DestinationTesting/QtChatMessagingProject-main/";
+    filePath = "D:/Akron/Spring 2023/ChatAppCNet/QtChatMessagingProject-main/";
 }
 
 MainWindow::~MainWindow()
@@ -44,26 +44,6 @@ void MainWindow::on_signinButton_clicked()
     //Set the global user to the information entered
     user = userEntered->toPlainText();
     password = passwordEntered->toPlainText();
-
-    //Will try and find the path for the .pro file but not needed if you add the hardcoded path aboe
-    if(filePath.isNull()){
-        qDebug() << QDir::currentPath();
-        //New path to the file since it isn't in the build I will redirect it
-        QRegularExpression rx("[/ ]");// match a comma or a space
-        QStringList list = QDir::currentPath().split(rx, Qt::SkipEmptyParts);
-
-        //Will read and go back one directory to find my xmlLogin file
-        for(int i(0); i < list.size()-1; i++){
-            if(i == 0){
-                filePath = list[i] + "/";
-            }else{
-                filePath = filePath + list[i] + "/";
-            }
-
-        }
-        filePath = filePath + QCoreApplication::applicationName() + "/";
-        qDebug() << "FilePath: " + filePath;
-    }
 
     //Check that user and password match
     QDomDocument usersXML;
@@ -444,25 +424,6 @@ void MainWindow::on_signupButton_clicked()
     qDebug() <<"signup";
     QTextEdit *userEntered = ui->userName;
     QTextEdit *passwordEntered = ui->password;
-
-
-    if(filePath.isNull()){
-        qDebug() << "QDirectory path: " + QDir::currentPath();
-        //New path to the file since it isn't in the build I will redirect it
-        QRegularExpression rx("[/ ]");// match a comma or a space
-        QStringList list = QDir::currentPath().split(rx, Qt::SkipEmptyParts);
-
-        for(int i(0); i < list.size()-1; i++){
-            if(i == 0){
-                filePath = list[i] + "/";
-            }else{
-                filePath = filePath + list[i] + "/";
-            }
-
-        }
-        filePath = filePath + QCoreApplication::applicationName() + "/";
-        qDebug() << "FilePath: " + filePath;
-    }
 
     QFile xmlFile(filePath + "xmlLogin.xml");
     if (!xmlFile.open(QFile::ReadWrite | QFile::Text ))

@@ -8,6 +8,7 @@
 #include <QJsonArray>
 #include <QtXml>
 #include <QTextStream>
+#include "simplecrypt.h"
 
 ChatClient::ChatClient(QObject *parent)
     : QObject(parent)
@@ -53,10 +54,13 @@ void ChatClient::sendMessage(const QString &text, const QString &destination, co
     QDataStream clientStream(m_clientSocket);
     // set the version so that programs compiled with different versions of Qt can agree on how to serialise
     clientStream.setVersion(QDataStream::Qt_5_7);
+    QString encryptedText = text;
+    //Encrypts the text
+    encrypt(encryptedText);
     // Create the JSON we want to send
     QJsonObject message;
     message[QStringLiteral("type")] = QStringLiteral("message");
-    message[QStringLiteral("text")] = text;
+    message[QStringLiteral("text")] = encryptedText;
     message[QStringLiteral("destination")] = destination;
     message[QStringLiteral("source")] = source;
     // send the JSON using QDataStream as long as a destination was chosen
@@ -99,27 +103,15 @@ void ChatClient::jsonReceived(const QJsonObject &docObj)
         const QJsonValue textVal = docObj.value(QLatin1String("text"));
         // we extract the sender field containing the username of the sender
         const QJsonValue senderVal = docObj.value(QLatin1String("sender"));
+        // we extract the destination value
+        const QJsonValue destinationVal = docObj.value(QLatin1String("destination"));
         if (textVal.isNull() || !textVal.isString())
             return; // the text field was invalid so we ignore
         if (senderVal.isNull() || !senderVal.isString())
             return; // the sender field was invalid so we ignore
 
         //Below we are added the received message to the clientJSON so when we need to update the chat view we will read them
-        qDebug() << QDir::currentPath();
-        //New path to the file since it isn't in the build I will redirect it
-        QRegularExpression rx("[/ ]");// match a comma or a space
-        QStringList list = QDir::currentPath().split(rx, Qt::SkipEmptyParts);
-
-        for(int i(0); i < list.size()-1; i++){
-            if(i == 0){
-                filePath = list[i] + "/";
-            }else{
-                filePath = filePath + list[i] + "/";
-            }
-
-        }
-        filePath = filePath + QCoreApplication::applicationName() + "/";
-        qDebug() << "FilePath: " + filePath;
+        filePath = "D:/Akron/Spring 2023/ChatAppCNet/QtChatMessagingProject-main/";
         QFile file(filePath + "clientJson.xml");
         if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
             //Failed to open
@@ -128,11 +120,17 @@ void ChatClient::jsonReceived(const QJsonObject &docObj)
         }
         QJsonDocument document = QJsonDocument::fromJson(file.readAll());
         file.close();
-
+        QString decryptedText = textVal.toString();
+        decrypt(decryptedText);
         QJsonObject RootObject = document.object();
         QJsonArray messageArray = RootObject[senderVal.toString()].toArray();
         QJsonObject content;
-        content.insert("RECV", docObj);
+        QJsonObject decryptedObj;
+        decryptedObj.insert("text", decryptedText);
+        decryptedObj.insert("destination", destinationVal);
+        decryptedObj.insert("source", senderVal);
+
+        content.insert("RECV", decryptedObj);
         messageArray.append(content);
         RootObject[senderVal.toString()] = messageArray;
         //RootObject["Messages"] = messageArray;
@@ -146,8 +144,9 @@ void ChatClient::jsonReceived(const QJsonObject &docObj)
             file.close();
         }
 
+
         // we notify a new message was received via the messageReceived signal
-        emit messageReceived(senderVal.toString(), textVal.toString());
+        emit messageReceived(senderVal.toString(), decryptedText);
     } else if (typeVal.toString().compare(QLatin1String("newuser"), Qt::CaseInsensitive) == 0) { // A user joined the chat
         // we extract the username of the new user
         const QJsonValue usernameVal = docObj.value(QLatin1String("username"));
@@ -208,3 +207,14 @@ void ChatClient::onReadyRead()
     }
 }
 
+void ChatClient::encrypt(QString &text)
+{
+    SimpleCrypt crypto(Q_UINT64_C(0x0135738293439122));
+    text = crypto.encryptToString(text);
+}
+
+void ChatClient::decrypt(QString &text)
+{
+    SimpleCrypt crypto(Q_UINT64_C(0x0135738293439122));
+    text = crypto.decryptToString(text);
+}

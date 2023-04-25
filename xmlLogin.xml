@@ -3,4 +3,6 @@
  <userInfo contacts="" password="1213" userName="NIYAH21"/>
  <userInfo contacts="" password="1221" userName="NIYAH1221"/>
  <userInfo contacts=",CHRIS" password="0321" userName="ALIYAH"/>
+ <userInfo contacts=",Aniyah,Caden" password="Caden" userName="Caden"/>
+ <userInfo contacts=",Caden" password="Aniyah&#xa;Aniyah" userName="Aniyah"/>
 </UserList>

@@ -12,12 +12,14 @@ SOURCES += \
     chatclient.cpp \
     chatmainwindow.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    simplecrypt.cpp
 
 HEADERS += \
     chatclient.h \
     chatmainwindow.h \
-    mainwindow.h
+    mainwindow.h \
+    simplecrypt.h
 
 FORMS += \
     chatmainwindow.ui \

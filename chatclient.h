@@ -17,6 +17,8 @@ public slots:
     void login(const QString &userName);
     void sendMessage(const QString &text, const QString &destination, const QString &source);
     void disconnectFromHost();
+    void encrypt(QString &text);
+    void decrypt(QString &text);
 private slots:
     void onReadyRead();
 signals:
