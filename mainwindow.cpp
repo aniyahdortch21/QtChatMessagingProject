@@ -91,7 +91,8 @@ void MainWindow::on_signinButton_clicked()
 
         chat =new Ui::ChatMainWindow;
         chat->setupUi(this); //Switch the view from login to chat view
-
+        chat->label->setText(title); //Display user name in title
+        
         // Inits that chat model and the contacts model so we can add to it in the future
         m_chatModel->insertColumn(0);
         m_contactModel->insertColumn(0);
